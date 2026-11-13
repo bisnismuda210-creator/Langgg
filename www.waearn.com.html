@@ -1,0 +1,1522 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WaEarn - Platform Sewa WA & Job Blast Resmi</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        },
+                        darkBg: '#0f172a',
+                        cardBg: '#1e293b'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0f19;
+            color: #f8fafc;
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-nav {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 50%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .glow-effect {
+            box-shadow: 0 0 25px -5px rgba(34, 197, 94, 0.3);
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-brand-500 selection:text-white">
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-3 pointer-events-none"></div>
+
+    <!-- Navigation Bar -->
+    <header class="sticky top-0 z-40 glass-nav">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <!-- Brand Logo -->
+            <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('landing')">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-brand-600 to-emerald-400 flex items-center justify-center text-slate-950 font-bold text-xl shadow-lg glow-effect">
+                    <i class="fa-brands font-bold fa-whatsapp text-2xl text-slate-950"></i>
+                </div>
+                <div>
+                    <span class="text-xl font-extrabold tracking-tight text-white">Wa<span class="gradient-text">Earn</span></span>
+                    <span class="hidden sm:inline-block ml-2 px-2 py-0.5 text-xs font-medium bg-brand-500/20 text-brand-400 border border-brand-500/30 rounded-full">Rp 800/Chat</span>
+                </div>
+            </div>
+
+            <!-- Desktop Nav Links -->
+            <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
+                <button onclick="switchTab('landing')" class="hover:text-brand-400 transition-colors">Beranda</button>
+                <button onclick="scrollToSection('simulasi')" class="hover:text-brand-400 transition-colors">Kalkulator Fee</button>
+                <button onclick="scrollToSection('cara-kerja')" class="hover:text-brand-400 transition-colors">Cara Kerja</button>
+                <button onclick="scrollToSection('faq')" class="hover:text-brand-400 transition-colors">Keamanan & FAQ</button>
+                <button onclick="switchTab('member')" class="hover:text-brand-400 transition-colors flex items-center gap-2">
+                    <span>Dashboard Saya</span>
+                    <span id="navMemberBadge" class="hidden w-2 h-2 rounded-full bg-brand-500 animate-pulse"></span>
+                </button>
+            </nav>
+
+            <!-- Header Action Buttons -->
+            <div class="flex items-center gap-3">
+                <button onclick="switchTab('register')" class="hidden sm:flex items-center gap-2 bg-gradient-to-r from-brand-600 to-emerald-500 hover:from-brand-500 hover:to-emerald-400 text-slate-950 font-semibold px-5 py-2.5 rounded-xl transition-all shadow-md hover:shadow-brand-500/20 active:scale-95 text-sm">
+                    <i class="fa-solid fa-plus-circle"></i>
+                    <span>Setor Nomor WA</span>
+                </button>
+                <button onclick="openAdminAuth()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2" title="Panel Owner / Admin">
+                    <i class="fa-solid fa-user-shield text-brand-400"></i>
+                    <span class="hidden lg:inline">Panel Admin</span>
+                </button>
+                <!-- Mobile Menu Button -->
+                <button onclick="toggleMobileMenu()" class="md:hidden p-2 text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Drawer Menu -->
+        <div id="mobileMenu" class="hidden md:hidden border-t border-slate-800 bg-slate-900/95 px-4 pt-3 pb-6 space-y-3">
+            <button onclick="switchTab('landing'); toggleMobileMenu()" class="block w-full text-left py-2 text-slate-300 font-medium">Beranda</button>
+            <button onclick="scrollToSection('simulasi'); toggleMobileMenu()" class="block w-full text-left py-2 text-slate-300 font-medium">Kalkulator Fee</button>
+            <button onclick="scrollToSection('cara-kerja'); toggleMobileMenu()" class="block w-full text-left py-2 text-slate-300 font-medium">Cara Kerja</button>
+            <button onclick="scrollToSection('faq'); toggleMobileMenu()" class="block w-full text-left py-2 text-slate-300 font-medium">Keamanan & FAQ</button>
+            <button onclick="switchTab('member'); toggleMobileMenu()" class="block w-full text-left py-2 text-brand-400 font-medium">Dashboard Member</button>
+            <button onclick="switchTab('register'); toggleMobileMenu()" class="w-full mt-2 bg-brand-500 text-slate-950 font-bold py-3 rounded-xl text-center">Setor Nomor WA Sekarang</button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER WITH DYNAMIC TAB VIEW -->
+    <main class="flex-grow">
+        
+        <!-- ================= LANDING PAGE TAB ================= -->
+        <section id="tab-landing" class="tab-content transition-opacity duration-300">
+            <!-- Hero Section -->
+            <div class="relative overflow-hidden pt-12 pb-20 md:py-24">
+                <!-- Background Decorative Glows -->
+                <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-brand-500/10 blur-[120px] rounded-full pointer-events-none"></div>
+                <div class="absolute top-1/3 right-10 w-[300px] h-[300px] bg-blue-500/10 blur-[100px] rounded-full pointer-events-none"></div>
+
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+                    <!-- Security Pill -->
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card text-brand-400 text-xs sm:text-sm font-medium mb-8 border-brand-500/30">
+                        <i class="fa-solid fa-shield-halved text-brand-400"></i>
+                        <span>100% Aman & Transparan • Sistem Jedah Natural Anti-Banned</span>
+                    </div>
+
+                    <h1 class="text-4xl sm:text-6xl font-extrabold text-white tracking-tight leading-tight max-w-4xl mx-auto">
+                        Sewakan Nomor WhatsApp, Dapatkan Pasif Income <span class="gradient-text">Rp 800 / Chat</span>
+                    </h1>
+                    
+                    <p class="mt-6 text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed">
+                        Manfaatkan akun WA kamu yang sedang nganggur untuk promosi bisnis & broadcast informasi resmi. Chat dikirim bertahap secara otomatis, tanpa menyentuh privasi pesan pribadi kamu!
+                    </p>
+
+                    <!-- Primary CTAs -->
+                    <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+                        <button onclick="switchTab('register')" class="w-full sm:w-auto bg-gradient-to-r from-brand-600 to-emerald-500 hover:from-brand-500 hover:to-emerald-400 text-slate-950 font-bold px-8 py-4 rounded-2xl shadow-xl hover:shadow-brand-500/25 transition-all text-base flex items-center justify-center gap-3 group">
+                            <span>Mulai Sewakan WA Saya</span>
+                            <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                        </button>
+                        <button onclick="scrollToSection('simulasi')" class="w-full sm:w-auto glass-card hover:bg-slate-800 text-slate-200 font-semibold px-8 py-4 rounded-2xl transition-all text-base border-slate-700">
+                            <i class="fa-solid fa-calculator text-brand-400 mr-2"></i> Hitung Estimasi Gaji
+                        </button>
+                    </div>
+
+                    <!-- Safety Guarantee Badges -->
+                    <div class="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                        <div class="glass-card p-5 rounded-2xl flex items-center gap-4 text-left">
+                            <div class="w-12 h-12 rounded-xl bg-brand-500/10 flex items-center justify-center text-brand-400 shrink-0 text-xl">
+                                <i class="fa-solid fa-lock"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-white text-sm">Privasi 100% Aman</h4>
+                                <p class="text-xs text-slate-400">Tidak ada akses ke kontak pribadi atau riwayat pesan kamu.</p>
+                            </div>
+                        </div>
+                        <div class="glass-card p-5 rounded-2xl flex items-center gap-4 text-left">
+                            <div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 shrink-0 text-xl">
+                                <i class="fa-solid fa-gauge-high"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-white text-sm">Slow-Blast Technology</h4>
+                                <p class="text-xs text-slate-400">Jeda pengiriman wajar & acak menjaga reputasi akun tetap segar.</p>
+                            </div>
+                        </div>
+                        <div class="glass-card p-5 rounded-2xl flex items-center gap-4 text-left">
+                            <div class="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-400 shrink-0 text-xl">
+                                <i class="fa-solid fa-wallet"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-white text-sm">Pencairan Otomatis</h4>
+                                <p class="text-xs text-slate-400">Fee Rp 800/chat langsung masuk e-wallet (DANA, GoPay, OVO, Bank).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Income Calculator Section -->
+            <div id="simulasi" class="py-16 bg-slate-900/60 border-y border-slate-800">
+                <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center mb-12">
+                        <span class="text-brand-400 font-semibold text-sm uppercase tracking-wider">Simulasi Interaktif</span>
+                        <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-2">Berapa Penghasilan yang Bisa Kamu Dapatkan?</h2>
+                        <p class="text-slate-400 text-sm sm:text-base mt-2">Hitung potensi cuan harian & bulanan kamu hanya dari menyewakan slot WA.</p>
+                    </div>
+
+                    <div class="glass-card p-6 sm:p-10 rounded-3xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-center border-slate-700/60 shadow-2xl">
+                        <!-- Slider Controls -->
+                        <div class="lg:col-span-7 space-y-6">
+                            <div>
+                                <div class="flex justify-between items-center mb-3">
+                                    <label class="font-semibold text-slate-200">Estimasi Chat Terkirim Per Hari:</label>
+                                    <span id="chatDisplayVal" class="text-2xl font-bold text-brand-400 bg-brand-500/10 px-4 py-1 rounded-xl border border-brand-500/20">250 Chat</span>
+                                </div>
+                                <input type="range" id="chatRange" min="10" max="1000" step="10" value="250" oninput="updateCalculator()" class="w-full h-3 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-brand-500">
+                                <div class="flex justify-between text-xs text-slate-400 mt-2">
+                                    <span>10 Chat</span>
+                                    <span>250 Chat</span>
+                                    <span>500 Chat</span>
+                                    <span>1.000 Chat</span>
+                                </div>
+                            </div>
+
+                            <!-- Preset Buttons -->
+                            <div class="pt-2">
+                                <span class="text-xs text-slate-400 block mb-2 font-medium">Pilih Mode Kerja:</span>
+                                <div class="grid grid-cols-3 gap-3">
+                                    <button onclick="setCalculatorPreset(50)" class="py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold border border-slate-700 transition-all">
+                                        🌱 Santai (50 Chat)
+                                    </button>
+                                    <button onclick="setCalculatorPreset(250)" class="py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold border border-slate-700 transition-all">
+                                        ⚡ Sedang (250 Chat)
+                                    </button>
+                                    <button onclick="setCalculatorPreset(600)" class="py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold border border-slate-700 transition-all">
+                                        🚀 Maksimal (600 Chat)
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="p-4 bg-slate-800/80 rounded-2xl border border-slate-700/60 text-xs text-slate-300 space-y-1">
+                                <p class="font-semibold text-brand-400 flex items-center gap-2">
+                                    <i class="fa-solid fa-circle-check"></i> Skema Garansi Rate Resmi:
+                                </p>
+                                <p>Setiap 1 pesan iklan/job blast terkirim sukses diverifikasi sistem = <strong>Rp 800</strong> langsung ditambahkan ke saldo akun kamu.</p>
+                            </div>
+                        </div>
+
+                        <!-- Income Result Card -->
+                        <div class="lg:col-span-5 bg-gradient-to-b from-slate-800 to-slate-900 p-6 sm:p-8 rounded-2xl border border-brand-500/30 text-center relative overflow-hidden">
+                            <div class="absolute -right-8 -top-8 w-28 h-28 bg-brand-500/10 rounded-full blur-2xl"></div>
+                            
+                            <span class="text-xs uppercase tracking-widest text-slate-400 font-bold block mb-1">Estimasi Penghasilan Harian</span>
+                            <div id="dailyFeeResult" class="text-4xl sm:text-5xl font-black text-white my-2 gradient-text">Rp 200.000</div>
+                            <span class="text-xs text-slate-400">/ hari (250 Chat × Rp 800)</span>
+
+                            <div class="my-6 border-t border-slate-700/80"></div>
+
+                            <span class="text-xs uppercase tracking-widest text-slate-400 font-bold block mb-1">Estimasi Potensi Bulanan (30 Hari)</span>
+                            <div id="monthlyFeeResult" class="text-2xl sm:text-3xl font-extrabold text-brand-400">Rp 6.000.000</div>
+                            <span class="text-xs text-slate-400">Pasif income langsung cair ke E-Wallet</span>
+
+                            <button onclick="switchTab('register')" class="w-full mt-6 bg-brand-500 hover:bg-brand-400 text-slate-950 font-bold py-3.5 rounded-xl transition-all shadow-lg text-sm">
+                                Ambil Slot Sewa Sekarang
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- How It Works Section -->
+            <div id="cara-kerja" class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <span class="text-brand-400 font-semibold text-sm uppercase tracking-wider">Langkah Mudah</span>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-2">Hanya 3 Langkah untuk Mulai Hasilkan Uang</h2>
+                    <p class="text-slate-400 mt-2 max-w-xl mx-auto text-sm sm:text-base">Proses cepat, mudah dipahami, dan kamu bisa pantau jalannya pengiriman kapan saja.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+                    <!-- Step 1 -->
+                    <div class="glass-card p-8 rounded-3xl relative flex flex-col justify-between hover:border-brand-500/50 transition-all">
+                        <div>
+                            <div class="w-14 h-14 rounded-2xl bg-brand-500/20 text-brand-400 font-black text-2xl flex items-center justify-center mb-6 border border-brand-500/30">
+                                01
+                            </div>
+                            <h3 class="text-xl font-bold text-white mb-3">Setor Nomor WA</h3>
+                            <p class="text-slate-400 text-sm leading-relaxed">
+                                Isi formulir pendaftaran dengan nomor WhatsApp aktif yang akan disewakan beserta nomor rekening / e-wallet pencairan kamu.
+                            </p>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-slate-800 text-xs text-slate-400 font-medium">
+                            <i class="fa-solid fa-clock mr-1.5 text-brand-400"></i> Proses daftar &lt; 2 menit
+                        </div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="glass-card p-8 rounded-3xl relative flex flex-col justify-between hover:border-brand-500/50 transition-all">
+                        <div>
+                            <div class="w-14 h-14 rounded-2xl bg-blue-500/20 text-blue-400 font-black text-2xl flex items-center justify-center mb-6 border border-blue-500/30">
+                                02
+                            </div>
+                            <h3 class="text-xl font-bold text-white mb-3">Aktivasi Sesi Job Blast</h3>
+                            <p class="text-slate-400 text-sm leading-relaxed">
+                                Tim kami memverifikasi akun dan menjalankan blast promosi UMKM/Official secara perlahan dengan sistem delay aman (Anti-Spam).
+                            </p>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-slate-800 text-xs text-slate-400 font-medium">
+                            <i class="fa-solid fa-robot mr-1.5 text-blue-400"></i> Otomatis & slow rate
+                        </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="glass-card p-8 rounded-3xl relative flex flex-col justify-between hover:border-brand-500/50 transition-all">
+                        <div>
+                            <div class="w-14 h-14 rounded-2xl bg-amber-500/20 text-amber-400 font-black text-2xl flex items-center justify-center mb-6 border border-amber-500/30">
+                                03
+                            </div>
+                            <h3 class="text-xl font-bold text-white mb-3">Tarik Saldo Rp 800/Chat</h3>
+                            <p class="text-slate-400 text-sm leading-relaxed">
+                                Pantau statistik chat terkirim secara real-time di Dashboard Member. Saldo otomatis terkumpul dan siap cair kapan saja.
+                            </p>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-slate-800 text-xs text-slate-400 font-medium">
+                            <i class="fa-solid fa-money-bill-wave mr-1.5 text-amber-400"></i> Minimum withdraw fleksibel
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Safety & FAQ Section -->
+            <div id="faq" class="py-20 bg-slate-900/50 border-t border-slate-800">
+                <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center mb-14">
+                        <span class="text-brand-400 font-semibold text-sm uppercase tracking-wider">Pertanyaan Populer</span>
+                        <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-2">Jaminan Keamanan & FAQ</h2>
+                        <p class="text-slate-400 text-sm sm:text-base mt-2">Kami sangat mengedepankan keamanan akun dan transparansi sistem pencairan.</p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <!-- FAQ 1 -->
+                        <div class="glass-card rounded-2xl p-6 border-slate-700/60">
+                            <h4 class="text-lg font-bold text-white flex items-center gap-3">
+                                <i class="fa-solid fa-circle-question text-brand-400"></i>
+                                Apakah pesan pribadi saya di WhatsApp bisa terbaca?
+                            </h4>
+                            <p class="mt-3 text-slate-400 text-sm leading-relaxed pl-7">
+                                <strong>Sama sekali tidak.</strong> Sistem kerja job blast kami hanya menggunakan jalur broadcast promosi terpisah. Kami tidak mengambil riwayat percakapan pribadi, foto galeri, maupun daftar kontak pribadi Anda. Privasi Anda terlindungi 100%.
+                            </p>
+                        </div>
+
+                        <!-- FAQ 2 -->
+                        <div class="glass-card rounded-2xl p-6 border-slate-700/60">
+                            <h4 class="text-lg font-bold text-white flex items-center gap-3">
+                                <i class="fa-solid fa-circle-question text-brand-400"></i>
+                                Apakah nomor WA saya aman dari risiko Banned/Terblokir?
+                            </h4>
+                            <p class="mt-3 text-slate-400 text-sm leading-relaxed pl-7">
+                                Kami menerapkan fitur <strong>Slow-Blast Technology & Human-Behavior Simulation</strong>. Pengiriman pesan diberi jeda acak 1–3 menit antar pesan, pesan yang dikirim bukan materi ilegal (hanya promosi diskon usaha UMKM/info resmi), sehingga reputasi nomor Anda tetap terjaga.
+                            </p>
+                        </div>
+
+                        <!-- FAQ 3 -->
+                        <div class="glass-card rounded-2xl p-6 border-slate-700/60">
+                            <h4 class="text-lg font-bold text-white flex items-center gap-3">
+                                <i class="fa-solid fa-circle-question text-brand-400"></i>
+                                Berapa lama proses pencairan saldo fee Rp 800/chat?
+                            </h4>
+                            <p class="mt-3 text-slate-400 text-sm leading-relaxed pl-7">
+                                Setelah sesi blast selesai atau mencapai kuota harian, Anda bisa mengajukan penarikan dari Dashboard Member. Dana dikirim langsung ke DANA, GoPay, OVO, atau Rekening Bank dalam kurun waktu maksimum 1x24 jam.
+                            </p>
+                        </div>
+
+                        <!-- FAQ 4 -->
+                        <div class="glass-card rounded-2xl p-6 border-slate-700/60">
+                            <h4 class="text-lg font-bold text-white flex items-center gap-3">
+                                <i class="fa-solid fa-circle-question text-brand-400"></i>
+                                Apakah akun WhatsApp baru bisa mendaftar?
+                            </h4>
+                            <p class="mt-3 text-slate-400 text-sm leading-relaxed pl-7">
+                                Disarankan menggunakan nomor WA yang sudah berumur minimal 3 bulan agar sesi pengiriman blast berjalan stabil dan tidak terkena pembatasan dari sistem WhatsApp.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Call to Action Banner -->
+            <div class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="bg-gradient-to-r from-brand-900/60 via-slate-800 to-slate-900 border border-brand-500/40 rounded-3xl p-8 sm:p-12 text-center relative overflow-hidden">
+                    <div class="relative z-10">
+                        <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Siap Menghasilkan Pasif Income Hari Ini?</h2>
+                        <p class="text-slate-300 mt-3 max-w-xl mx-auto text-sm sm:text-base">
+                            Jangan biarkan nomor WhatsApp kamu menganggur. Daftarkan nomor kamu sekarang dan nikmati fee Rp 800 per chat!
+                        </p>
+                        <button onclick="switchTab('register')" class="mt-8 bg-brand-500 hover:bg-brand-400 text-slate-950 font-extrabold px-8 py-4 rounded-2xl text-base transition-all shadow-xl glow-effect">
+                            Setor Nomor WA Sekarang <i class="fa-solid fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= REGISTER / SETOR WA FORM TAB ================= -->
+        <section id="tab-register" class="tab-content hidden py-12">
+            <div class="max-w-2xl mx-auto px-4 sm:px-6">
+                <!-- Back Button -->
+                <button onclick="switchTab('landing')" class="text-xs text-slate-400 hover:text-white mb-6 flex items-center gap-2">
+                    <i class="fa-solid fa-arrow-left"></i> Kembali ke Beranda
+                </button>
+
+                <div class="glass-card rounded-3xl p-6 sm:p-10 border-slate-700/80 shadow-2xl relative">
+                    <div class="text-center mb-8">
+                        <div class="w-16 h-16 rounded-2xl bg-brand-500/20 text-brand-400 flex items-center justify-center mx-auto mb-4 border border-brand-500/30 text-2xl">
+                            <i class="fa-brands fa-whatsapp"></i>
+                        </div>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Formulir Pendaftaran Sewa WA</h2>
+                        <p class="text-slate-400 text-xs sm:text-sm mt-1">Isi data akun WA dan rekening pencairan fee kamu dengan benar.</p>
+                    </div>
+
+                    <form id="waRegisterForm" onsubmit="handleRegistration(event)" class="space-y-5">
+                        <!-- Nama Lengkap / Panggilan -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Nama Lengkap / Panggilan *</label>
+                            <input type="text" id="regName" required placeholder="Contoh: Budi Santoso" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 text-sm">
+                        </div>
+
+                        <!-- Nomor WhatsApp -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Nomor WhatsApp Aktif *</label>
+                            <div class="relative">
+                                <input type="text" id="regPhone" required placeholder="Contoh: 081234567890 atau 6281234567890" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 text-sm">
+                                <span class="absolute right-3 top-3.5 text-xs text-slate-500 font-medium">WA Utama</span>
+                            </div>
+                            <p class="text-[11px] text-slate-400 mt-1">Pastikan WhatsApp terinstal di ponsel Anda dan dapat menerima pesan verifikasi.</p>
+                        </div>
+
+                        <!-- Estimasi Umur Akun WA -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Estimasi Umur Akun WA *</label>
+                            <select id="regAge" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brand-500 text-sm">
+                                <option value="" disabled selected>-- Pilih Umur Akun --</option>
+                                <option value="< 3 Bulan">Kurang dari 3 Bulan (Bisa Diuji Coba)</option>
+                                <option value="3 - 6 Bulan">3 - 6 Bulan (Direkomendasikan)</option>
+                                <option value="6 - 12 Bulan">6 - 12 Bulan (Sangat Bagus)</option>
+                                <option value="> 1 Tahun">Lebih dari 1 Tahun (Prioritas Utama)</option>
+                            </select>
+                        </div>
+
+                        <!-- Grid Metode Pembayaran & No Rekening -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Metode Pencairan *</label>
+                                <select id="regPaymentMethod" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brand-500 text-sm">
+                                    <option value="DANA">DANA</option>
+                                    <option value="GoPay">GoPay</option>
+                                    <option value="OVO">OVO</option>
+                                    <option value="ShopeePay">ShopeePay</option>
+                                    <option value="SeaBank">SeaBank</option>
+                                    <option value="Bank BCA">Bank BCA</option>
+                                    <option value="Bank Mandiri">Bank Mandiri</option>
+                                    <option value="Bank BRI">Bank BRI</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">No. E-Wallet / Rekening *</label>
+                                <input type="text" id="regAccountNo" required placeholder="Contoh: 081234567890 / 8830123" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 text-sm">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Nama Pemilik Rekening / E-Wallet *</label>
+                            <input type="text" id="regAccountHolder" required placeholder="Sesuai aplikasi e-wallet / buku tabungan" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 text-sm">
+                        </div>
+
+                        <!-- Checkbox Persetujuan -->
+                        <div class="flex items-start gap-3 pt-2">
+                            <input type="checkbox" id="termsCheck" required class="mt-1 rounded bg-slate-900 border-slate-700 text-brand-500 focus:ring-brand-500">
+                            <label for="termsCheck" class="text-xs text-slate-400 leading-relaxed">
+                                Saya menyetujui nomor WA disewakan untuk penerusan promosi resmi dengan tarif <strong>Rp 800/chat</strong> dan menjamin informasi di atas benar.
+                            </label>
+                        </div>
+
+                        <button type="submit" class="w-full mt-4 bg-gradient-to-r from-brand-600 to-emerald-500 hover:from-brand-500 hover:to-emerald-400 text-slate-950 font-bold py-3.5 rounded-xl transition-all shadow-lg text-sm flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-paper-plane"></i> Submit & Masuk Dashboard Member
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= MEMBER DASHBOARD TAB ================= -->
+        <section id="tab-member" class="tab-content hidden py-10">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <!-- If No Active Member Session -->
+                <div id="noMemberState" class="hidden text-center py-16 glass-card rounded-3xl p-8 max-w-xl mx-auto">
+                    <div class="w-16 h-16 rounded-full bg-slate-800 text-amber-400 flex items-center justify-center mx-auto mb-4 text-2xl border border-slate-700">
+                        <i class="fa-solid fa-user-xmark"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white">Belum Ada Akun Terdaftar</h3>
+                    <p class="text-slate-400 text-sm mt-2 mb-6">Kamu belum memasukkan nomor WhatsApp untuk disewakan. Daftarkan nomor kamu dulu yuk!</p>
+                    <button onclick="switchTab('register')" class="bg-brand-500 hover:bg-brand-400 text-slate-950 font-bold px-6 py-3 rounded-xl text-sm transition-all">
+                        Setor Nomor WA Sekarang
+                    </button>
+                </div>
+
+                <!-- Active Member Dashboard Content -->
+                <div id="activeMemberState" class="space-y-8">
+                    <!-- Dashboard Header Header -->
+                    <div class="glass-card rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-slate-700/80">
+                        <div>
+                            <div class="flex items-center gap-3">
+                                <h2 class="text-2xl sm:text-3xl font-extrabold text-white" id="memWelcomeName">Halo, Member!</h2>
+                                <span id="memStatusBadge" class="px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                                    🟡 Menunggu Verifikasi
+                                </span>
+                            </div>
+                            <p class="text-slate-400 text-xs sm:text-sm mt-1">
+                                ID Member: <span id="memId" class="text-slate-200 font-mono font-bold">#WA-0000</span> • 
+                                WA: <span id="memPhone" class="text-brand-400 font-mono font-semibold">08123456789</span>
+                            </p>
+                        </div>
+                        <div class="flex items-center gap-3 w-full md:w-auto">
+                            <button onclick="switchTab('register')" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium px-4 py-2.5 rounded-xl border border-slate-700 transition-all flex items-center gap-2">
+                                <i class="fa-solid fa-plus text-brand-400"></i> Tambah Nomor Lain
+                            </button>
+                            <button onclick="logoutMember()" class="text-xs bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 font-medium px-4 py-2.5 rounded-xl transition-all">
+                                Ganti Akun
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Stats Cards Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                        <!-- Card 1: Chat Terkirim -->
+                        <div class="glass-card p-6 rounded-2xl border-slate-700/70 relative">
+                            <div class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Chat Berhasil Terkirim</div>
+                            <div class="text-3xl font-black text-white mt-2 flex items-baseline gap-2">
+                                <span id="memChatSent">0</span>
+                                <span class="text-xs font-medium text-slate-400">Pesan</span>
+                            </div>
+                            <div class="mt-3 text-[11px] text-slate-400 flex items-center gap-1">
+                                <i class="fa-solid fa-bolt text-amber-400"></i>
+                                <span>Diperbarui otomatis oleh sistem</span>
+                            </div>
+                        </div>
+
+                        <!-- Card 2: Fixed Rate -->
+                        <div class="glass-card p-6 rounded-2xl border-slate-700/70 relative">
+                            <div class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Rate Komisi Per Chat</div>
+                            <div class="text-3xl font-black text-brand-400 mt-2">
+                                Rp 800
+                            </div>
+                            <div class="mt-3 text-[11px] text-slate-400">
+                                Flat rate resmi tanpa potongan
+                            </div>
+                        </div>
+
+                        <!-- Card 3: Total Saldo -->
+                        <div class="glass-card p-6 rounded-2xl border-brand-500/30 bg-gradient-to-b from-slate-800 to-slate-900/90 relative">
+                            <div class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Saldo Fee Berjalan</div>
+                            <div class="text-3xl font-black text-white mt-2 gradient-text" id="memTotalBalance">
+                                Rp 0
+                            </div>
+                            <div class="mt-3 text-[11px] text-brand-400 font-medium">
+                                Chat Sukses × Rp 800
+                            </div>
+                        </div>
+
+                        <!-- Card 4: Status Pencairan -->
+                        <div class="glass-card p-6 rounded-2xl border-slate-700/70 flex flex-col justify-between">
+                            <div>
+                                <div class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Tujuan Pencairan</div>
+                                <div class="text-sm font-bold text-white mt-1" id="memPayoutDetail">DANA - 0812***</div>
+                                <div class="text-xs text-slate-400" id="memAccountHolder">a.n. Member</div>
+                            </div>
+                            <button onclick="requestPayoutModal()" class="w-full mt-3 bg-brand-500 hover:bg-brand-400 text-slate-950 text-xs font-bold py-2 rounded-xl transition-all shadow-md">
+                                <i class="fa-solid fa-hand-holding-dollar mr-1"></i> Tarik Saldo Sekarang
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Session Security & Live Activity -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Session Monitor -->
+                        <div class="lg:col-span-2 glass-card rounded-2xl p-6 border-slate-700/70">
+                            <div class="flex justify-between items-center mb-6">
+                                <div>
+                                    <h3 class="font-bold text-white text-lg">Aktivitas Sesi Blast Akun WA</h3>
+                                    <p class="text-xs text-slate-400">Status real-time pengerjaan broadcast promosi resmi.</p>
+                                </div>
+                                <span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-1.5">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                                    <span>Monitoring On</span>
+                                </span>
+                            </div>
+
+                            <!-- Interactive Progress Step Timeline -->
+                            <div class="space-y-4">
+                                <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm font-bold">1</div>
+                                        <div>
+                                            <div class="text-sm font-semibold text-white">Verifikasi Kelayakan Nomor</div>
+                                            <div class="text-xs text-slate-400">Pemeriksaan umur akun & kestabilan koneksi WA.</div>
+                                        </div>
+                                    </div>
+                                    <span class="text-xs font-medium text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg">Selesai ✓</span>
+                                </div>
+
+                                <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center text-sm font-bold">2</div>
+                                        <div>
+                                            <div class="text-sm font-semibold text-white">Proses Job Blast Berjalan (Slow Rate)</div>
+                                            <div class="text-xs text-slate-400">Pengiriman pesan dengan jeda acak 1-2 menit.</div>
+                                        </div>
+                                    </div>
+                                    <span class="text-xs font-medium text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-lg" id="memBlastStatusText">Sedang Diproses</span>
+                                </div>
+
+                                <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center text-sm font-bold">3</div>
+                                        <div>
+                                            <div class="text-sm font-semibold text-white">Pencairan Fee Harian</div>
+                                            <div class="text-xs text-slate-400">Transfer otomatis ke e-wallet / bank member.</div>
+                                        </div>
+                                    </div>
+                                    <span class="text-xs font-medium text-slate-400 bg-slate-800 px-2.5 py-1 rounded-lg">Menunggu Klaim</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sidebar Protection Rules -->
+                        <div class="glass-card rounded-2xl p-6 border-slate-700/70 flex flex-col justify-between">
+                            <div>
+                                <h3 class="font-bold text-white text-base mb-3 flex items-center gap-2">
+                                    <i class="fa-solid fa-shield-cat text-brand-400"></i> Panduan Keamanan
+                                </h3>
+                                <ul class="text-xs text-slate-400 space-y-2.5 leading-relaxed">
+                                    <li class="flex items-start gap-2">
+                                        <i class="fa-solid fa-check text-brand-400 mt-0.5"></i>
+                                        <span>Jangan melepaskan koneksi WhatsApp Web saat sesi job blast berlangsung.</span>
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <i class="fa-solid fa-check text-brand-400 mt-0.5"></i>
+                                        <span>Fee Rp 800/chat secara otomatis dihitung per pesan sukses terkirim.</span>
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <i class="fa-solid fa-check text-brand-400 mt-0.5"></i>
+                                        <span>Jika ada penarikan, mohon pastikan nama e-wallet sesuai dengan formulir.</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="mt-6 p-3 bg-brand-500/10 rounded-xl border border-brand-500/20 text-center">
+                                <span class="text-xs text-brand-400 font-semibold">Butuh Bantuan CS Fast Response?</span>
+                                <a href="https://wa.me/" target="_blank" class="block text-xs text-white font-bold mt-1 underline hover:text-brand-300">
+                                    Hubungi Admin Telegram / WA Support
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- ================= ADMIN PANEL / OWNER DASHBOARD TAB ================= -->
+        <section id="tab-admin" class="tab-content hidden py-10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+                <!-- Header Admin Bar -->
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+                    <div>
+                        <div class="flex items-center gap-3">
+                            <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Panel Control Owner / Admin</h2>
+                            <span class="px-2.5 py-0.5 text-xs font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-lg">Owner Access</span>
+                        </div>
+                        <p class="text-slate-400 text-xs sm:text-sm mt-1">Pantau seluruh nomor WA terdaftar, ubah jumlah chat terkirim, dan atur pencairan fee Rp 800/chat.</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button onclick="openAddManualModal()" class="bg-brand-500 hover:bg-brand-400 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-user-plus"></i> Tambah Data Manual
+                        </button>
+                        <button onclick="switchTab('landing')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2.5 rounded-xl text-xs font-medium border border-slate-700 transition-all">
+                            Keluar Admin
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Admin Metrics Overview Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+                    <!-- Metric 1 -->
+                    <div class="glass-card p-5 rounded-2xl border-slate-700/80">
+                        <div class="text-slate-400 text-xs font-semibold uppercase">Total Nomor WA Terdaftar</div>
+                        <div class="text-3xl font-black text-white mt-1" id="admTotalCount">0</div>
+                        <div class="text-[11px] text-slate-400 mt-2">Nomor aktif dalam sistem</div>
+                    </div>
+                    <!-- Metric 2 -->
+                    <div class="glass-card p-5 rounded-2xl border-slate-700/80">
+                        <div class="text-slate-400 text-xs font-semibold uppercase">Nomor Status Aktif Jalan</div>
+                        <div class="text-3xl font-black text-emerald-400 mt-1" id="admActiveCount">0</div>
+                        <div class="text-[11px] text-emerald-400 mt-2">Sedang sesi blast aktif</div>
+                    </div>
+                    <!-- Metric 3 -->
+                    <div class="glass-card p-5 rounded-2xl border-slate-700/80">
+                        <div class="text-slate-400 text-xs font-semibold uppercase">Total Chat Sukses Blast</div>
+                        <div class="text-3xl font-black text-blue-400 mt-1" id="admTotalChats">0</div>
+                        <div class="text-[11px] text-slate-400 mt-2">Akumulasi seluruh nomor</div>
+                    </div>
+                    <!-- Metric 4 -->
+                    <div class="glass-card p-5 rounded-2xl border-brand-500/40">
+                        <div class="text-slate-400 text-xs font-semibold uppercase">Total Pengeluaran Fee (Rp 800)</div>
+                        <div class="text-3xl font-black text-amber-400 mt-1" id="admTotalFee">Rp 0</div>
+                        <div class="text-[11px] text-amber-400 mt-2">Total kewajiban bayar member</div>
+                    </div>
+                </div>
+
+                <!-- Search and Filter Controls -->
+                <div class="glass-card rounded-2xl p-4 mb-6 border-slate-700/80 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div class="relative w-full md:w-96">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-500 text-xs"></i>
+                        <input type="text" id="admSearch" oninput="renderAdminTable()" placeholder="Cari nama, nomor WA, atau E-wallet..." class="w-full bg-slate-900 border border-slate-700 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-500">
+                    </div>
+                    <div class="flex items-center gap-3 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
+                        <span class="text-xs text-slate-400 font-medium whitespace-nowrap">Filter Status:</span>
+                        <select id="admFilterStatus" onchange="renderAdminTable()" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-500">
+                            <option value="ALL">Semua Status</option>
+                            <option value="Menunggu">🟡 Menunggu Verifikasi</option>
+                            <option value="Aktif">🟢 Aktif Jalan</option>
+                            <option value="Selesai">🔵 Selesai</option>
+                            <option value="Ditolak">🔴 Ditolak</option>
+                        </select>
+                        <button onclick="resetDataToDefault()" class="text-xs text-slate-400 hover:text-red-400 border border-slate-700 bg-slate-900 px-3 py-2 rounded-xl whitespace-nowrap">
+                            <i class="fa-solid fa-rotate-left mr-1"></i> Reset Data Contoh
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Main Monitoring Table -->
+                <div class="glass-card rounded-2xl overflow-hidden border-slate-700/80 shadow-2xl">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead>
+                                <tr class="bg-slate-900/90 text-slate-400 font-semibold uppercase tracking-wider border-b border-slate-800">
+                                    <th class="py-4 px-4">Member / No WA</th>
+                                    <th class="py-4 px-4">Umur Akun</th>
+                                    <th class="py-4 px-4">Metode & Rekening</th>
+                                    <th class="py-4 px-4 text-center">Chat Terkirim</th>
+                                    <th class="py-4 px-4">Total Fee (Rp 800)</th>
+                                    <th class="py-4 px-4">Status</th>
+                                    <th class="py-4 px-4 text-center">Aksi / Control</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminTableBody" class="divide-y divide-slate-800 text-slate-300">
+                                <!-- Dynamic Rows Injected by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 bg-slate-950 py-10 mt-16 text-slate-400 text-xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-2">
+                <div class="w-6 h-6 rounded-lg bg-brand-500 text-slate-950 font-bold flex items-center justify-center text-xs">W</div>
+                <span class="font-bold text-white text-sm">WaEarn Platform</span>
+                <span>— Platform Sewa WA & Job Blast Resmi</span>
+            </div>
+            <div class="flex items-center gap-6 text-slate-400">
+                <a href="#simulasi" onclick="switchTab('landing')" class="hover:text-white transition-colors">Kalkulator</a>
+                <a href="#cara-kerja" onclick="switchTab('landing')" class="hover:text-white transition-colors">Ketentuan</a>
+                <a href="#faq" onclick="switchTab('landing')" class="hover:text-white transition-colors">FAQ</a>
+                <button onclick="openAdminAuth()" class="hover:text-brand-400">Owner Login</button>
+            </div>
+            <div>
+                © 2026 WaEarn. All Rights Reserved. Transparan & Terpercaya.
+            </div>
+        </div>
+    </footer>
+
+
+    <!-- ================= MODALS & DIALOGS ================= -->
+
+    <!-- Modal Admin Auth (PIN Lock) -->
+    <div id="adminAuthModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-card rounded-3xl p-6 sm:p-8 max-w-sm w-full border-slate-700 shadow-2xl relative">
+            <button onclick="closeAdminAuth()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            
+            <div class="text-center">
+                <div class="w-14 h-14 rounded-2xl bg-brand-500/20 text-brand-400 flex items-center justify-center mx-auto mb-4 text-2xl border border-brand-500/30">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <h3 class="text-xl font-extrabold text-white">Akses Panel Owner</h3>
+                <p class="text-xs text-slate-400 mt-1">Masukkan PIN keamanan untuk mengelola database nomor WA.</p>
+            </div>
+
+            <div class="mt-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-2 text-center">PIN Admin/Owner (Default: 1234)</label>
+                    <input type="password" id="adminPinInput" maxlength="6" placeholder="Masukkan PIN 1234" class="w-full text-center tracking-widest text-lg font-mono bg-slate-900 border border-slate-700 rounded-xl py-3 text-white focus:outline-none focus:border-brand-500">
+                </div>
+                <button onclick="verifyAdminPin()" class="w-full bg-brand-500 hover:bg-brand-400 text-slate-950 font-bold py-3 rounded-xl text-sm transition-all shadow-md">
+                    Masuk ke Panel Admin
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Edit Chat Count & Status Admin -->
+    <div id="adminEditModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-card rounded-3xl p-6 sm:p-8 max-w-md w-full border-slate-700 shadow-2xl relative">
+            <button onclick="closeEditModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            
+            <h3 class="text-lg font-bold text-white mb-1">Update Data Member</h3>
+            <p class="text-xs text-slate-400 mb-5" id="editMemberSub">Mengubah status & jumlah chat terkirim.</p>
+
+            <form onsubmit="saveMemberEdit(event)" class="space-y-4">
+                <input type="hidden" id="editMemberId">
+                
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Status Nomor WA</label>
+                    <select id="editStatusSelect" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-brand-500">
+                        <option value="Menunggu">🟡 Menunggu Verifikasi</option>
+                        <option value="Aktif">🟢 Aktif Jalan (Sesi Blast)</option>
+                        <option value="Selesai">🔵 Selesai</option>
+                        <option value="Ditolak">🔴 Ditolak</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Jumlah Chat Sukses Terkirim</label>
+                    <input type="number" id="editChatCount" min="0" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-brand-500">
+                    <p class="text-[11px] text-brand-400 mt-1" id="editFeePreview">Total Fee: Rp 0 (Chat × Rp 800)</p>
+                </div>
+
+                <div class="pt-2 flex justify-end gap-3">
+                    <button type="button" onclick="closeEditModal()" class="px-4 py-2 rounded-xl text-xs bg-slate-800 text-slate-300">Batal</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl text-xs font-bold bg-brand-500 text-slate-950">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Add Manual Member (Admin) -->
+    <div id="adminAddModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-card rounded-3xl p-6 sm:p-8 max-w-md w-full border-slate-700 shadow-2xl relative">
+            <button onclick="closeAddManualModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <h3 class="text-lg font-bold text-white mb-4">Tambah Nomor WA Manual</h3>
+
+            <form onsubmit="handleAdminAddManual(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block text-slate-300 font-medium mb-1">Nama Member</label>
+                    <input type="text" id="addName" required placeholder="Contoh: Rian Utama" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                </div>
+                <div>
+                    <label class="block text-slate-300 font-medium mb-1">Nomor WA</label>
+                    <input type="text" id="addPhone" required placeholder="08xxxxxxxxxx" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-slate-300 font-medium mb-1">Umur Akun</label>
+                        <select id="addAge" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                            <option value="3 - 6 Bulan">3 - 6 Bulan</option>
+                            <option value="6 - 12 Bulan">6 - 12 Bulan</option>
+                            <option value="> 1 Tahun">> 1 Tahun</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-slate-300 font-medium mb-1">Metode</label>
+                        <select id="addMethod" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                            <option value="DANA">DANA</option>
+                            <option value="GoPay">GoPay</option>
+                            <option value="OVO">OVO</option>
+                            <option value="SeaBank">SeaBank</option>
+                            <option value="Bank BCA">Bank BCA</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-slate-300 font-medium mb-1">No. Rekening / E-Wallet & Atas Nama</label>
+                    <input type="text" id="addAccNo" required placeholder="0812345678 (a.n Rian)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                </div>
+                <div>
+                    <label class="block text-slate-300 font-medium mb-1">Status Awal</label>
+                    <select id="addStatus" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                        <option value="Menunggu">🟡 Menunggu Verifikasi</option>
+                        <option value="Aktif">🟢 Aktif Jalan</option>
+                    </select>
+                </div>
+                <div class="pt-3 flex justify-end gap-2">
+                    <button type="button" onclick="closeAddManualModal()" class="px-4 py-2 rounded-xl text-slate-300 bg-slate-800">Batal</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl font-bold bg-brand-500 text-slate-950">Tambah Data</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Withdraw Confirmation (Member) -->
+    <div id="payoutModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-card rounded-3xl p-6 sm:p-8 max-w-sm w-full border-slate-700 shadow-2xl text-center relative">
+            <button onclick="closePayoutModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <div class="w-14 h-14 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center mx-auto mb-4 text-2xl border border-amber-500/30">
+                <i class="fa-solid fa-money-bill-transfer"></i>
+            </div>
+            <h3 class="text-xl font-extrabold text-white">Konfirmasi Penarikan Saldo</h3>
+            <p class="text-xs text-slate-400 mt-2">Pencairan akan dikirimkan ke rekening tujuan kamu.</p>
+
+            <div class="my-5 p-4 bg-slate-900 rounded-2xl border border-slate-800 text-left space-y-2">
+                <div class="flex justify-between text-xs">
+                    <span class="text-slate-400">Total Penarikan:</span>
+                    <span class="font-bold text-brand-400 text-sm" id="payoutModalAmount">Rp 0</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                    <span class="text-slate-400">Metode & Rekening:</span>
+                    <span class="font-medium text-white" id="payoutModalTarget">-</span>
+                </div>
+            </div>
+
+            <button onclick="confirmPayoutSubmit()" class="w-full bg-brand-500 hover:bg-brand-400 text-slate-950 font-bold py-3 rounded-xl text-sm transition-all shadow-md">
+                Kirim Permintaan Pencairan
+            </button>
+        </div>
+    </div>
+
+
+    <!-- ================= JAVASCRIPT LOGIC ================= -->
+    <script>
+        // Default initial dummy database for realistic preview
+        const INITIAL_MEMBERS = [
+            {
+                id: 'WA-9041',
+                name: 'Rian Pratama',
+                phone: '081298471203',
+                age: '> 1 Tahun',
+                method: 'DANA',
+                accNo: '081298471203',
+                accHolder: 'Rian Pratama',
+                chatSent: 340,
+                status: 'Aktif',
+                registeredAt: '2026-03-28'
+            },
+            {
+                id: 'WA-8821',
+                name: 'Dewi Lestari',
+                phone: '085711223344',
+                age: '6 - 12 Bulan',
+                method: 'GoPay',
+                accNo: '085711223344',
+                accHolder: 'Dewi Lestari',
+                chatSent: 180,
+                status: 'Aktif',
+                registeredAt: '2026-03-29'
+            },
+            {
+                id: 'WA-7612',
+                name: 'Fikri Haikal',
+                phone: '089644332211',
+                age: '3 - 6 Bulan',
+                method: 'SeaBank',
+                accNo: '90123847123',
+                accHolder: 'Fikri Haikal',
+                chatSent: 50,
+                status: 'Menunggu',
+                registeredAt: '2026-03-30'
+            },
+            {
+                id: 'WA-6549',
+                name: 'Siti Rahmawati',
+                phone: '081377889900',
+                age: '> 1 Tahun',
+                method: 'Bank BCA',
+                accNo: '8830192841',
+                accHolder: 'Siti Rahmawati',
+                chatSent: 650,
+                status: 'Selesai',
+                registeredAt: '2026-03-27'
+            }
+        ];
+
+        // State Management
+        let membersData = [];
+        let currentActiveMemberId = null;
+        const ADMIN_PIN = "1234";
+        const RATE_PER_CHAT = 800;
+
+        // Initialize App
+        window.addEventListener('DOMContentLoaded', () => {
+            loadState();
+            updateCalculator();
+            renderAdminTable();
+            checkMemberSessionUI();
+        });
+
+        // Save & Load State from LocalStorage
+        function loadState() {
+            const saved = localStorage.getItem('waearn_members_db');
+            if (saved) {
+                try {
+                    membersData = JSON.parse(saved);
+                } catch(e) {
+                    membersData = [...INITIAL_MEMBERS];
+                }
+            } else {
+                membersData = [...INITIAL_MEMBERS];
+                saveState();
+            }
+
+            const savedMemId = localStorage.getItem('waearn_current_member_id');
+            if (savedMemId) {
+                currentActiveMemberId = savedMemId;
+            }
+        }
+
+        function saveState() {
+            localStorage.setItem('waearn_members_db', JSON.stringify(membersData));
+        }
+
+        function resetDataToDefault() {
+            membersData = [...INITIAL_MEMBERS];
+            saveState();
+            renderAdminTable();
+            updateMemberDashboardUI();
+            showToast("Database contoh berhasil di-reset!", "info");
+        }
+
+        // Navigation Tabs Controller
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            const target = document.getElementById(`tab-${tabName}`);
+            if (target) {
+                target.classList.remove('hidden');
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            if (tabName === 'member') {
+                checkMemberSessionUI();
+            } else if (tabName === 'admin') {
+                renderAdminTable();
+            }
+        }
+
+        function scrollToSection(id) {
+            switchTab('landing');
+            setTimeout(() => {
+                const el = document.getElementById(id);
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Custom Toast System (No browser alerts)
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            
+            let bgClass = 'bg-slate-800 border-brand-500 text-white';
+            let icon = '<i class="fa-solid fa-circle-check text-brand-400 text-lg"></i>';
+
+            if (type === 'error') {
+                bgClass = 'bg-slate-800 border-red-500 text-white';
+                icon = '<i class="fa-solid fa-circle-xmark text-red-400 text-lg"></i>';
+            } else if (type === 'info') {
+                bgClass = 'bg-slate-800 border-blue-500 text-white';
+                icon = '<i class="fa-solid fa-circle-info text-blue-400 text-lg"></i>';
+            }
+
+            toast.className = `glass-card pointer-events-auto border-l-4 ${bgClass} px-4 py-3 rounded-xl shadow-xl flex items-center gap-3 text-xs sm:text-sm font-medium transition-all transform translate-y-2 opacity-0 duration-300`;
+            toast.innerHTML = `${icon} <span>${message}</span>`;
+            
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        // Calculator Logic
+        function updateCalculator() {
+            const range = document.getElementById('chatRange');
+            const count = parseInt(range.value);
+            
+            document.getElementById('chatDisplayVal').innerText = `${count} Chat`;
+            
+            const daily = count * RATE_PER_CHAT;
+            const monthly = daily * 30;
+
+            document.getElementById('dailyFeeResult').innerText = `Rp ${daily.toLocaleString('id-ID')}`;
+            document.getElementById('monthlyFeeResult').innerText = `Rp ${monthly.toLocaleString('id-ID')}`;
+        }
+
+        function setCalculatorPreset(val) {
+            document.getElementById('chatRange').value = val;
+            updateCalculator();
+        }
+
+        // Registration Form Handling
+        function handleRegistration(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('regName').value.trim();
+            const phone = document.getElementById('regPhone').value.trim();
+            const age = document.getElementById('regAge').value;
+            const method = document.getElementById('regPaymentMethod').value;
+            const accNo = document.getElementById('regAccountNo').value.trim();
+            const accHolder = document.getElementById('regAccountHolder').value.trim();
+
+            if (!phone.startsWith('08') && !phone.startsWith('628')) {
+                showToast("Format nomor WA harus diawali 08xx atau 628xx", "error");
+                return;
+            }
+
+            const newId = 'WA-' + Math.floor(1000 + Math.random() * 9000);
+
+            const newMember = {
+                id: newId,
+                name: name,
+                phone: phone,
+                age: age,
+                method: method,
+                accNo: accNo,
+                accHolder: accHolder,
+                chatSent: 0,
+                status: 'Menunggu',
+                registeredAt: new Date().toISOString().split('T')[0]
+            };
+
+            membersData.unshift(newMember);
+            saveState();
+
+            // Set current active member session
+            currentActiveMemberId = newId;
+            localStorage.setItem('waearn_current_member_id', newId);
+
+            document.getElementById('waRegisterForm').reset();
+            showToast("Nomor WhatsApp berhasil didaftarkan! Mengalihkan ke Dashboard...", "success");
+
+            setTimeout(() => {
+                switchTab('member');
+            }, 600);
+        }
+
+        // Member Dashboard UI State
+        function checkMemberSessionUI() {
+            const noState = document.getElementById('noMemberState');
+            const activeState = document.getElementById('activeMemberState');
+            const navBadge = document.getElementById('navMemberBadge');
+
+            if (!currentActiveMemberId) {
+                noState.classList.remove('hidden');
+                activeState.classList.add('hidden');
+                navBadge.classList.add('hidden');
+                return;
+            }
+
+            const member = membersData.find(m => m.id === currentActiveMemberId);
+            if (!member) {
+                currentActiveMemberId = null;
+                localStorage.removeItem('waearn_current_member_id');
+                noState.classList.remove('hidden');
+                activeState.classList.add('hidden');
+                navBadge.classList.add('hidden');
+                return;
+            }
+
+            noState.classList.add('hidden');
+            activeState.classList.remove('hidden');
+            navBadge.classList.remove('hidden');
+
+            updateMemberDashboardUI(member);
+        }
+
+        function updateMemberDashboardUI(mem) {
+            const member = mem || membersData.find(m => m.id === currentActiveMemberId);
+            if (!member) return;
+
+            document.getElementById('memWelcomeName').innerText = `Halo, ${member.name}!`;
+            document.getElementById('memId').innerText = `#${member.id}`;
+            document.getElementById('memPhone').innerText = member.phone;
+
+            // Status Badge
+            const badge = document.getElementById('memStatusBadge');
+            if (member.status === 'Aktif') {
+                badge.className = 'px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+                badge.innerText = '🟢 Sesi Blast Aktif';
+            } else if (member.status === 'Selesai') {
+                badge.className = 'px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-400 border border-blue-500/30';
+                badge.innerText = '🔵 Selesai';
+            } else if (member.status === 'Ditolak') {
+                badge.className = 'px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400 border border-red-500/30';
+                badge.innerText = '🔴 Ditolak / Suspended';
+            } else {
+                badge.className = 'px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-400 border border-amber-500/30';
+                badge.innerText = '🟡 Menunggu Verifikasi';
+            }
+
+            document.getElementById('memChatSent').innerText = member.chatSent.toLocaleString('id-ID');
+            
+            const balance = member.chatSent * RATE_PER_CHAT;
+            document.getElementById('memTotalBalance').innerText = `Rp ${balance.toLocaleString('id-ID')}`;
+
+            document.getElementById('memPayoutDetail').innerText = `${member.method} - ${member.accNo}`;
+            document.getElementById('memAccountHolder').innerText = `a.n. ${member.accHolder}`;
+
+            const blastText = document.getElementById('memBlastStatusText');
+            if (member.status === 'Aktif') {
+                blastText.innerText = 'Sedang Berjalan (Slow Mode)';
+                blastText.className = 'text-xs font-medium text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg';
+            } else {
+                blastText.innerText = 'Menunggu Aktivasi Tim';
+                blastText.className = 'text-xs font-medium text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-lg';
+            }
+        }
+
+        function logoutMember() {
+            currentActiveMemberId = null;
+            localStorage.removeItem('waearn_current_member_id');
+            checkMemberSessionUI();
+            showToast("Anda telah keluar dari dashboard member", "info");
+        }
+
+        function requestPayoutModal() {
+            const member = membersData.find(m => m.id === currentActiveMemberId);
+            if (!member) return;
+
+            const total = member.chatSent * RATE_PER_CHAT;
+            if (total <= 0) {
+                showToast("Saldo kamu masih Rp 0. Tunggu sesi blast berjalan!", "error");
+                return;
+            }
+
+            document.getElementById('payoutModalAmount').innerText = `Rp ${total.toLocaleString('id-ID')}`;
+            document.getElementById('payoutModalTarget').innerText = `${member.method} (${member.accNo})`;
+            document.getElementById('payoutModal').classList.remove('hidden');
+        }
+
+        function closePayoutModal() {
+            document.getElementById('payoutModal').classList.add('hidden');
+        }
+
+        function confirmPayoutSubmit() {
+            closePayoutModal();
+            showToast("Permintaan pencairan berhasil dikirim ke Admin! Proses transfer max 1x24 jam.", "success");
+        }
+
+
+        // Admin Authentication Logic
+        function openAdminAuth() {
+            document.getElementById('adminAuthModal').classList.remove('hidden');
+            document.getElementById('adminPinInput').value = '';
+            setTimeout(() => document.getElementById('adminPinInput').focus(), 100);
+        }
+
+        function closeAdminAuth() {
+            document.getElementById('adminAuthModal').classList.add('hidden');
+        }
+
+        function verifyAdminPin() {
+            const inputPin = document.getElementById('adminPinInput').value.trim();
+            if (inputPin === ADMIN_PIN) {
+                closeAdminAuth();
+                switchTab('admin');
+                showToast("Berhasil masuk ke Panel Admin", "success");
+            } else {
+                showToast("PIN Admin Salah! (Petunjuk PIN: 1234)", "error");
+            }
+        }
+
+
+        // Admin Panel Functions & Table Rendering
+        function renderAdminTable() {
+            const body = document.getElementById('adminTableBody');
+            const search = document.getElementById('admSearch').value.toLowerCase();
+            const filter = document.getElementById('admFilterStatus').value;
+
+            // Filter logic
+            let filtered = membersData.filter(item => {
+                const matchSearch = item.name.toLowerCase().includes(search) || 
+                                    item.phone.toLowerCase().includes(search) || 
+                                    item.accNo.toLowerCase().includes(search) || 
+                                    item.id.toLowerCase().includes(search);
+                const matchStatus = filter === 'ALL' || item.status === filter;
+                return matchSearch && matchStatus;
+            });
+
+            // Update Metrics Summary
+            let totalChats = 0;
+            let activeCount = 0;
+
+            membersData.forEach(m => {
+                totalChats += (m.chatSent || 0);
+                if (m.status === 'Aktif') activeCount++;
+            });
+
+            document.getElementById('admTotalCount').innerText = membersData.length;
+            document.getElementById('admActiveCount').innerText = activeCount;
+            document.getElementById('admTotalChats').innerText = totalChats.toLocaleString('id-ID');
+            document.getElementById('admTotalFee').innerText = `Rp ${(totalChats * RATE_PER_CHAT).toLocaleString('id-ID')}`;
+
+            // Render Table Rows
+            if (filtered.length === 0) {
+                body.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="py-8 text-center text-slate-500">
+                            Tidak ada data nomor WhatsApp yang sesuai.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            body.innerHTML = filtered.map(m => {
+                const fee = (m.chatSent || 0) * RATE_PER_CHAT;
+                let statusBadge = '';
+
+                if (m.status === 'Aktif') {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">🟢 Aktif Jalan</span>`;
+                } else if (m.status === 'Selesai') {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-blue-500/20 text-blue-400 border border-blue-500/30">🔵 Selesai</span>`;
+                } else if (m.status === 'Ditolak') {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-red-500/20 text-red-400 border border-red-500/30">🔴 Ditolak</span>`;
+                } else {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-500/20 text-amber-400 border border-amber-500/30">🟡 Menunggu</span>`;
+                }
+
+                return `
+                    <tr class="hover:bg-slate-800/50 transition-colors">
+                        <td class="py-3.5 px-4">
+                            <div class="font-bold text-white">${m.name}</div>
+                            <div class="flex items-center gap-2 mt-0.5">
+                                <span class="font-mono text-brand-400 font-semibold">${m.phone}</span>
+                                <button onclick="copyToClipboard('${m.phone}')" class="text-slate-500 hover:text-white" title="Salin Nomor WA">
+                                    <i class="fa-regular fa-copy text-xs"></i>
+                                </button>
+                            </div>
+                            <div class="text-[10px] text-slate-500">${m.id}</div>
+                        </td>
+                        <td class="py-3.5 px-4">
+                            <span class="bg-slate-800 px-2 py-1 rounded text-[11px] font-medium text-slate-300 border border-slate-700">${m.age}</span>
+                        </td>
+                        <td class="py-3.5 px-4">
+                            <div class="font-semibold text-slate-200">${m.method}</div>
+                            <div class="text-[11px] font-mono text-slate-400">${m.accNo}</div>
+                            <div class="text-[10px] text-slate-500">a.n. ${m.accHolder}</div>
+                        </td>
+                        <td class="py-3.5 px-4 text-center">
+                            <span class="text-sm font-extrabold text-white bg-slate-900 px-3 py-1 rounded-xl border border-slate-800">
+                                ${(m.chatSent || 0).toLocaleString('id-ID')}
+                            </span>
+                        </td>
+                        <td class="py-3.5 px-4">
+                            <div class="font-bold text-emerald-400">Rp ${fee.toLocaleString('id-ID')}</div>
+                            <div class="text-[10px] text-slate-500">@ Rp 800/chat</div>
+                        </td>
+                        <td class="py-3.5 px-4">
+                            ${statusBadge}
+                        </td>
+                        <td class="py-3.5 px-4 text-center">
+                            <div class="flex items-center justify-center gap-2">
+                                <button onclick="openEditModal('${m.id}')" class="p-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-lg border border-blue-500/20 transition-all" title="Edit Jumlah Chat & Status">
+                                    <i class="fa-solid fa-pen-to-square text-xs"></i>
+                                </button>
+                                <button onclick="deleteMember('${m.id}')" class="p-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg border border-red-500/20 transition-all" title="Hapus Data">
+                                    <i class="fa-solid fa-trash-can text-xs"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Copy Text Helper
+        function copyToClipboard(text) {
+            const tempInput = document.createElement('input');
+            tempInput.value = text;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            try {
+                document.execCommand('copy');
+                showToast(`Nomor ${text} disalin ke clipboard!`, "info");
+            } catch (err) {
+                showToast("Gagal menyalin text", "error");
+            }
+            document.body.removeChild(tempInput);
+        }
+
+        // Edit Member Modal Logic
+        function openEditModal(id) {
+            const member = membersData.find(m => m.id === id);
+            if (!member) return;
+
+            document.getElementById('editMemberId').value = member.id;
+            document.getElementById('editMemberSub').innerText = `Nomor: ${member.phone} (${member.name})`;
+            document.getElementById('editStatusSelect').value = member.status;
+            document.getElementById('editChatCount').value = member.chatSent || 0;
+            
+            updateEditFeePreview();
+
+            document.getElementById('editChatCount').oninput = updateEditFeePreview;
+
+            document.getElementById('adminEditModal').classList.remove('hidden');
+        }
+
+        function updateEditFeePreview() {
+            const count = parseInt(document.getElementById('editChatCount').value) || 0;
+            const fee = count * RATE_PER_CHAT;
+            document.getElementById('editFeePreview').innerText = `Total Fee Member: Rp ${fee.toLocaleString('id-ID')} (${count} Chat × Rp 800)`;
+        }
+
+        function closeEditModal() {
+            document.getElementById('adminEditModal').classList.add('hidden');
+        }
+
+        function saveMemberEdit(e) {
+            e.preventDefault();
+            const id = document.getElementById('editMemberId').value;
+            const status = document.getElementById('editStatusSelect').value;
+            const chatSent = parseInt(document.getElementById('editChatCount').value) || 0;
+
+            const idx = membersData.findIndex(m => m.id === id);
+            if (idx !== -1) {
+                membersData[idx].status = status;
+                membersData[idx].chatSent = chatSent;
+                saveState();
+                renderAdminTable();
+                updateMemberDashboardUI();
+                closeEditModal();
+                showToast("Data member berhasil diperbarui!", "success");
+            }
+        }
+
+        function deleteMember(id) {
+            const idx = membersData.findIndex(m => m.id === id);
+            if (idx !== -1) {
+                const name = membersData[idx].name;
+                membersData.splice(idx, 1);
+                saveState();
+                renderAdminTable();
+                updateMemberDashboardUI();
+                showToast(`Data ${name} berhasil dihapus dari database.`, "info");
+            }
+        }
+
+        // Add Manual Admin Logic
+        function openAddManualModal() {
+            document.getElementById('adminAddModal').classList.remove('hidden');
+        }
+
+        function closeAddManualModal() {
+            document.getElementById('adminAddModal').classList.add('hidden');
+        }
+
+        function handleAdminAddManual(e) {
+            e.preventDefault();
+            const name = document.getElementById('addName').value.trim();
+            const phone = document.getElementById('addPhone').value.trim();
+            const age = document.getElementById('addAge').value;
+            const method = document.getElementById('addMethod').value;
+            const accNo = document.getElementById('addAccNo').value.trim();
+            const status = document.getElementById('addStatus').value;
+
+            const newMember = {
+                id: 'WA-' + Math.floor(1000 + Math.random() * 9000),
+                name: name,
+                phone: phone,
+                age: age,
+                method: method,
+                accNo: accNo,
+                accHolder: name,
+                chatSent: 0,
+                status: status,
+                registeredAt: new Date().toISOString().split('T')[0]
+            };
+
+            membersData.unshift(newMember);
+            saveState();
+            renderAdminTable();
+            closeAddManualModal();
+            showToast("Nomor WA berhasil ditambahkan oleh Admin!", "success");
+        }
+    </script>
+</body>
+</html>
